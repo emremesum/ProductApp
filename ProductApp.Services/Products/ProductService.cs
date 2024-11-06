@@ -2,9 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ProductApp.DataAccess;
 using ProductApp.DataAccess.Products;
-using System.Linq;
 using System.Net;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ProductApp.Services.Products;
 
@@ -69,9 +67,9 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         return ServiceResult<CreateProductResponse>.Success(new CreateProductResponse(product.Id));
     }
 
-    public async Task<ServiceResult> UpdateAsync(int id, UpdateProductRequest request)
+    public async Task<ServiceResult> UpdateAsync(UpdateProductRequest request)
     {
-        var product = await productRepository.GetByIdAsync(id);
+        var product = await productRepository.GetByIdAsync(request.Id);
         if (product is null)
         {
             return ServiceResult.Fail("Product not found", HttpStatusCode.NotFound);

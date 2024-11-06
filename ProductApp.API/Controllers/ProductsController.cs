@@ -22,12 +22,21 @@ public class ProductsController(IProductService productService) : ControllerBase
         }
     }
 
-    //[HttpPost]
-    //public async Task<IActionResult> Create(CreateProductRequest request)
-    //{
-    //    //return await productService.CreateWithoutImageAsync(request);
+    [HttpPost("update")]
+    public async Task<IActionResult> UpdateAsync([FromBody] UpdateProductRequest request )
+    {
+        var productResult = await productService.UpdateAsync(request);
+        if (productResult.IsSuccess)
+        {
+            return Ok(productResult.IsSuccess);
 
-    //}
+        }
+        else
+        {
+            return BadRequest(productResult.ErrorMessage);
+        }
+    }
+   
     [HttpPost("create")]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request)
     {
@@ -47,7 +56,7 @@ public class ProductsController(IProductService productService) : ControllerBase
         }
     }
 
-    [HttpPost]
+    [HttpPost("id")]
     public async Task<IActionResult> GetById(int id)
     {
         var productResult = await productService.GetByIdAsync(id);
