@@ -4,6 +4,7 @@ using ProductApp.DataAccess;
 using ProductApp.DataAccess.Products;
 using System.Linq;
 using System.Net;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ProductApp.Services.Products;
 
@@ -102,5 +103,27 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         //productRepository.Delete(product);
         await unitOfWork.SaveChangeAsync();
         return ServiceResult.Success();
+    }
+
+    public async Task<ServiceResult<CreateProductResponse>> CreateWithoutImageAsync(CreateProductRequest request)
+    {
+                                                                 
+        var product = new Product()
+        {
+            Code = request.Code,
+            ProductName = request.ProductName,
+            Price = request.Price,
+            CreatedDate = DateTime.Now,
+            DeletedDate = DateTime.Now,
+            ImageUrl = request.ImageUrl,
+            UpdatedDate = DateTime.Now,
+            IsDeleted = false,
+
+        };     
+
+        await productRepository.AddAsync(product);
+        await unitOfWork.SaveChangeAsync();
+
+        return ServiceResult<CreateProductResponse>.Success(new CreateProductResponse(product.Id));
     }
 }
