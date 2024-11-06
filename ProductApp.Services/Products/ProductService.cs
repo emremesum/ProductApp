@@ -1,16 +1,23 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductApp.DataAccess;
 using ProductApp.DataAccess.Products;
+using System.Linq;
 using System.Net;
-
 
 namespace ProductApp.Services.Products;
 
 public class ProductService(IProductRepository productRepository, IUnitOfWork unitOfWork) : IProductService
 {
-    public async Task<ServiceResult<List<Product>>> GetTopProductsAsync(int count)
+    public async Task<ServiceResult<List<ProductDto>>> GetAllListAsync()
+    {
+        // list isdeleted e silinmişler getirilmez.
+
+        var products = await productRepository.GetAll().ToListAsync();
+        var productsDto = products.Select(x => new ProductDto(x.Id, x.Code, x.DeletedDate, x.CreatedDate, x.ProductName, x.Price, x.UpdatedDate, x.IsDeleted, x.ImageUrl)).ToList();
+        return ServiceResult<List<ProductDto>>.Success(productsDto);
+    }
+    public async Task<ServiceResult<List<Product>>> GetTopsAsync(int count)
     {
         var products = await productRepository.GetTopProductsAsync(count);
 
@@ -18,8 +25,9 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         {
             Data = products,
         };
+
     }
-    public async Task<ServiceResult<ProductDto>> GetProductByIdAsync(int id)
+    public async Task<ServiceResult<ProductDto?>> GetByIdAsync(int id)
     {
         var product = await productRepository.GetByIdAsync(id);
 
@@ -28,18 +36,12 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
             ServiceResult<Product>.Fail("Product not found", HttpStatusCode.NotFound);
         }
 
-        var productsDto = new ProductDto(product!.ProductName, product.Code, product.Price, product.DeletedDate, product.CreatedDate, product.IsDeleted, product.ImageUrl, product.UpdatedDate);
+        var productsDto = new ProductDto(product!.Id,product!.Code, product.DeletedDate, product.CreatedDate, product.ProductName, product.Price, product.UpdatedDate, product.IsDeleted, product.ImageUrl);
 
-        return ServiceResult<ProductDto>.Success(productsDto!);
+        return ServiceResult<ProductDto>.Success(productsDto)!;
     }
 
-
-    public void DeleteId(int id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<ServiceResult<CreateProductResponse>> CreateProductAsync(CreateProductRequest request, IFormFile image)
+    public async Task<ServiceResult<CreateProductResponse>> CreateAsync(CreateProductRequest request, IFormFile image)
     {
         var product = new Product()
         {
@@ -47,7 +49,7 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
             ProductName = request.ProductName,
             Price = request.Price,
             CreatedDate = DateTime.Now,
-           
+
         };
         if (image != null)
         {
@@ -66,25 +68,39 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         return ServiceResult<CreateProductResponse>.Success(new CreateProductResponse(product.Id));
     }
 
+    public async Task<ServiceResult> UpdateAsync(int id, UpdateProductRequest request)
+    {
+        var product = await productRepository.GetByIdAsync(id);
+        if (product is null)
+        {
+            return ServiceResult.Fail("Product not found", HttpStatusCode.NotFound);
+        }
+        product.ProductName = request.ProductName;
+        product.Price = request.Price;
+        product.UpdatedDate = DateTime.Now;
+        //product.ImageUrl = request.ImageUrl;
+        product.Code = request.Code;
+
+
+        productRepository.Update(product);
+        await unitOfWork.SaveChangeAsync();
+
+        return ServiceResult.Success();
+    }
+
+    public async Task<ServiceResult> DeleteAsync(int id)
+    {
+        var product = await productRepository.GetByIdAsync(id);
+        if (product is null)
+        {
+            return ServiceResult.Fail("Product not found", HttpStatusCode.NotFound);
+        }
+        product.IsDeleted = true;
+
+
+        productRepository.Update(product);
+        //productRepository.Delete(product);
+        await unitOfWork.SaveChangeAsync();
+        return ServiceResult.Success();
+    }
 }
-
-
-//[HttpPost]
-//public async Task<IActionResult> AddProduct([FromForm] Product product, IFormFile image)
-//{
-//    if (image != null)
-//    {
-//        var imagePath = Path.Combine("wwwroot/images", $"{Guid.NewGuid()}_{image.FileName}");
-//        using (var stream = new FileStream(imagePath, FileMode.Create))
-//        {
-//            await image.CopyToAsync(stream);
-//        }
-//        product.ImagePath = imagePath;
-//    }
-
-//    // Database'e kaydet
-//    _context.Products.Add(product);
-//    await _context.SaveChangesAsync();
-
-//    return Ok(product);
-//}
