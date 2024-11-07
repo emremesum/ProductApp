@@ -7,67 +7,85 @@ namespace ProductApp.API.Controllers;
 [ApiController]
 public class ProductsController(IProductService productService) : ControllerBase
 {
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var productResult= await productService.GetAllListAsync();
-        if (productResult.IsSuccess)
-        {
-            return Ok(productResult.Data);
+	[HttpGet]
+	public async Task<IActionResult> GetAll()
+	{
+		var productResult = await productService.GetAllListAsync();
+		if (productResult.IsSuccess)
+		{
+			return Ok(productResult.Data);
 
-        }
-        else
-        {
-            return BadRequest(productResult.ErrorMessage);
-        }
-    }
+		}
+		else
+		{
+			return BadRequest(productResult.ErrorMessage);
+		}
+	}
 
-    [HttpPost("update")]
-    public async Task<IActionResult> UpdateAsync([FromBody] UpdateProductRequest request )
-    {
-        var productResult = await productService.UpdateAsync(request);
-        if (productResult.IsSuccess)
-        {
-            return Ok(productResult.IsSuccess);
+	[HttpGet("{id}")]
+	public async Task<IActionResult> GetById(int id)
+	{
+		var productResult = await productService.GetByIdAsync(id);
+		if (productResult.IsSuccess)
+		{
+			return Ok(productResult.Data);
+		}
+		else
+		{
+			return NotFound(productResult.ErrorMessage);
+		}
+	}
 
-        }
-        else
-        {
-            return BadRequest(productResult.ErrorMessage);
-        }
-    }
-   
-    [HttpPost("create")]
-    public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+	[HttpPost]
+	public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request)
+	{
+		if (!ModelState.IsValid)
+			return BadRequest(ModelState);
 
-        var productResult = await productService.CreateWithoutImageAsync(request);
+		var productResult = await productService.CreateWithoutImageAsync(request);
 
-        if (productResult.IsSuccess)
-        {
-            return Ok(productResult.Data);
+		if (productResult.IsSuccess)
+		{
+			return Ok(productResult.Data);
 
-        }
-        else
-        {
-            return BadRequest(productResult.ErrorMessage);
-        }
-    }
+		}
+		else
+		{
+			return BadRequest(productResult.ErrorMessage);
+		}
+	}
 
-    [HttpPost("id")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var productResult = await productService.GetByIdAsync(id);
-        if (productResult.IsSuccess)
-        {
-            return Ok(productResult.Data);
+	[HttpPut("{id}")]
+	public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateProductRequest request)
+	{
+		var existingProductResult = await productService.GetByIdAsync(id);
+		if (!existingProductResult.IsSuccess)
+		{
+			return NotFound(existingProductResult.ErrorMessage);
+		}
 
-        }
-        else
-        {
-            return BadRequest(productResult.ErrorMessage);
-        }
-    }
+		var updateResult = await productService.UpdateAsync(id, request);
+		if (updateResult.IsSuccess)
+		{
+			return Ok();
+		}
+
+		return BadRequest(updateResult.ErrorMessage);
+	}
+	
+	[HttpDelete("{id}")]
+	public async Task<IActionResult> DeleteAsync(int id)
+	{
+		var productResult = await productService.DeleteAsync(id);
+		if (productResult.IsSuccess)
+		{
+			return Ok();
+		}
+		else
+		{
+			return BadRequest(productResult.ErrorMessage);
+		}
+	}
+
+
 }
