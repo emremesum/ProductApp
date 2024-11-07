@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using ProductApp.DataAccess.Extensions;
+using ProductApp.Services.Auth;
 using ProductApp.Services.Extensions;
 using ProductApp.Services.Users;
 using System.Text;
@@ -21,6 +22,7 @@ builder.Services.AddCors(options =>
 		});
 });
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

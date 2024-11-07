@@ -55,6 +55,7 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
 
 		productRepository.Update(product);
 		await unitOfWork.SaveChangeAsync();
+
 		return ServiceResult.Success();
 	}
 	public async Task<ServiceResult> UpdateAsync(int id, UpdateProductRequest request)

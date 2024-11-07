@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProductApp.DataAccess;
 
@@ -11,9 +12,11 @@ using ProductApp.DataAccess;
 namespace ProductApp.DataAccess.Migrations
 {
     [DbContext(typeof(ProductAppDbContext))]
-    partial class ProductAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241107232948_AddSuppoertTable")]
+    partial class AddSuppoertTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

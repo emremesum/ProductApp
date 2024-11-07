@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductApp.DataAccess;
-using ProductApp.Services.Users;
+using ProductApp.Services.Auth;
 using System;
 
 namespace ProductApp.API.Controllers
 {
-	[ApiController]
+    [ApiController]
 	[Route("api/auth")]
 	public class AuthController : Controller
 	{

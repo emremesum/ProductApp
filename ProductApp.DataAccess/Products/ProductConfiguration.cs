@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ProductApp.DataAccess.Products;
 
-public class ProductConfiguration : IEntityTypeConfiguration<Product>
+public class ContactFormConfiguration : IEntityTypeConfiguration<Product>
 {
     public void Configure(EntityTypeBuilder<Product> builder)
     {
