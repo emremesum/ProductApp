@@ -77,7 +77,7 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         product.ProductName = request.ProductName;
         product.Price = request.Price;
         product.UpdatedDate = DateTime.Now;
-        //product.ImageUrl = request.ImageUrl;
+        product.ImageUrl = request.ImageUrl;
         product.Code = request.Code;
 
 

@@ -1,0 +1,27 @@
+﻿@using ProductApp.Services.Products
+
+@model UpdateProductRequest
+
+<div class="container">
+    Model 
+   
+    <form method="post">
+        <label>Ürün Id</label>
+        <textarea asp-for="Id" class="form-control" rows="1"></textarea>Model.Id
+        <br />
+        <label>Ürün Adı</label>
+        <textarea asp-for="ProductName" class="form-control" rows="5"></textarea>
+        <br />
+        <label>Kod</label>
+        <input type="text" asp-for="Code" class="form-control" />
+        <br />
+        <label>Birim</label>
+        <input type="text" asp-for="Price" class="form-control" />
+        <br />
+        <label>Image Path</label>
+        <input type="text" asp-for="ImageUrl" class="form-control" />
+        <br />
+        <button class="btn btn-outline-primary">Güncelle</button>
+    </form>
+
+</div>
