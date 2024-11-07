@@ -1,28 +1,25 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductApp.DataAccess.Products;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using ProductApp.DataAccess.User;
+using ProductApp.DataAccess.Users;
 
-namespace ProductApp.DataAccess
+namespace ProductApp.DataAccess;
+
+public class ProductAppDbContext:DbContext
 {
-    public class ProductAppDbContext:DbContext
+    public ProductAppDbContext(DbContextOptions<ProductAppDbContext> options) : base(options)
     {
-        public ProductAppDbContext(DbContextOptions<ProductAppDbContext> options) : base(options)
-        {
-
-        }
-        public DbSet<Product> Products { get; set; } = default!;
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-            base.OnModelCreating(modelBuilder);
-        }
 
     }
+    public DbSet<Product> Products { get; set; } = default!;
+    public DbSet<UserApp> Users { get; set; } = default!;
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        base.OnModelCreating(modelBuilder);
+    }
+
 }
