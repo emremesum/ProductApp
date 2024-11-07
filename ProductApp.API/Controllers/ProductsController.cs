@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProductApp.Services.Products;
 
 namespace ProductApp.API.Controllers;
@@ -8,6 +9,7 @@ namespace ProductApp.API.Controllers;
 public class ProductsController(IProductService productService) : ControllerBase
 {
 	[HttpGet]
+	[Authorize]
 	public async Task<IActionResult> GetAll()
 	{
 		var productResult = await productService.GetAllListAsync();
@@ -23,6 +25,7 @@ public class ProductsController(IProductService productService) : ControllerBase
 	}
 
 	[HttpGet("{id}")]
+	[Authorize]
 	public async Task<IActionResult> GetById(int id)
 	{
 		var productResult = await productService.GetByIdAsync(id);
@@ -37,6 +40,7 @@ public class ProductsController(IProductService productService) : ControllerBase
 	}
 
 	[HttpPost]
+	[Authorize]
 	public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request)
 	{
 		if (!ModelState.IsValid)
@@ -56,6 +60,7 @@ public class ProductsController(IProductService productService) : ControllerBase
 	}
 
 	[HttpPut("{id}")]
+	[Authorize]
 	public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateProductRequest request)
 	{
 		var existingProductResult = await productService.GetByIdAsync(id);
@@ -74,6 +79,7 @@ public class ProductsController(IProductService productService) : ControllerBase
 	}
 	
 	[HttpDelete("{id}")]
+	[Authorize]
 	public async Task<IActionResult> DeleteAsync(int id)
 	{
 		var productResult = await productService.DeleteAsync(id);
