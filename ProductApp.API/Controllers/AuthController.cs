@@ -28,7 +28,7 @@ namespace ProductApp.API.Controllers
 
 			if (user == null || user.Password != request.Password || user.Username != request.Username)
 			{
-				return Unauthorized("Invalid username or password");
+				return Unauthorized("Kullanıcı Adı veya şifre hatalı");
 			}
 
 			var token = _tokenService.GenerateToken(user);

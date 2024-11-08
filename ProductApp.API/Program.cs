@@ -11,23 +11,22 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-//builder.Services.AddRazorPages();
-builder.Services.AddCors(options =>
-{
-	options.AddPolicy("AllowSpecificOrigin",
-		builder =>
-		{
-			builder.WithOrigins("https://example.com") // Ýzin vermek istediðiniz URL
-				   .AllowAnyHeader()
-				   .AllowAnyMethod();
-		});
-});
+
+//builder.Services.AddCors(options =>
+//{
+//	options.AddPolicy("AllowSpecificOrigin",
+//		builder =>
+//		{
+//			builder.WithOrigins("https://example.com") // Ýzin vermek istediðiniz URL
+//				   .AllowAnyHeader()
+//				   .AllowAnyMethod();
+//		});
+//});
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IContactFormService, ContactFormService>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddRepositories(builder.Configuration).AddServices(builder.Configuration);
@@ -50,13 +49,7 @@ builder.Services.AddAuthentication(options =>
 		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
 	};
 });
-//builder.Services.AddMvc();
-
-
 var app = builder.Build();
-		 
-
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -65,12 +58,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowSpecificOrigin");
+//app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();
 app.UseAuthorization();
-//app.UseMvc;
 
-//app.MapRazorPages(); // Map Razor Pages
 app.MapControllers();
 
 app.Run();
