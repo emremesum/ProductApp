@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProductApp.DataAccess.Products;
+using ProductApp.DataAccess.SupportForm;
 using ProductApp.DataAccess.User;
 
 
@@ -20,7 +21,8 @@ public static class RepositoryExtensions
             });
         });
 
-        services.AddScoped<IProductRepository, ContactFormRepository>();
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IContactFormRepository, ContactFormRepository>();
 		services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
