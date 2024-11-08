@@ -1,11 +1,13 @@
-using ProductApp.DataAccess.Users;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
 using Microsoft.Extensions.Caching.Memory;
+using ProductApp.DataAccess.Users;
+using ProductApp.Services.Products;
+using ProductApp.Services.SupportForm;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
 using System.Text;
+using System.Text.Json;
 
 namespace ProductAppUI.Pages.User
 {
@@ -21,9 +23,13 @@ namespace ProductAppUI.Pages.User
         }
 
         public List<UserApp> Users { get; set; } = new List<UserApp>();
+        public List<ProductDto> Products { get; set; } = new List<ProductDto>();
+        public List<ContactFormDto> ContactForms { get; set; } = new List<ContactFormDto>();
+
         public string ErrorMessage { get; set; }
         public string Token { get; set; }
 
+        // User için alanlar
         [BindProperty]
         public string NewUsername { get; set; }
 
@@ -42,6 +48,34 @@ namespace ProductAppUI.Pages.User
         [BindProperty]
         public string UpdateRole { get; set; }
 
+        // Product için alanlar
+        [BindProperty]
+        public int ProductId { get; set; }
+
+        // Product için alanlar
+        [BindProperty]
+        public string ProductCode { get; set; }
+
+        [BindProperty]
+        public string ProductName { get; set; }
+
+        [BindProperty]
+        public decimal ProductPrice { get; set; }
+
+        [BindProperty]
+        public string ProductImageUrl { get; set; }
+
+
+        // Contact Form için alanlar
+        [BindProperty]
+        public int ContactFormId { get; set; }
+
+        [BindProperty]
+        public string ContactFormSubject { get; set; }
+
+        [BindProperty]
+        public string ContactFormMessage { get; set; }
+
         public async Task OnGetAsync()
         {
             if (!_cache.TryGetValue("token", out string token))
@@ -56,19 +90,25 @@ namespace ProductAppUI.Pages.User
 
             try
             {
-                var response = await client.GetAsync("https://localhost:7284/api/User/Admin");
+                // User listesi
+                var userResponse = await client.GetAsync("https://localhost:7284/api/User/Admin");
+                if (userResponse.IsSuccessStatusCode)
+                {
+                    Users = await userResponse.Content.ReadFromJsonAsync<List<UserApp>>();
+                }
 
-                if (response.IsSuccessStatusCode)
+                // Product listesi
+                var productResponse = await client.GetAsync("https://localhost:7284/api/Products");
+                if (productResponse.IsSuccessStatusCode)
                 {
-                    Users = await response.Content.ReadFromJsonAsync<List<UserApp>>();
+                    Products = await productResponse.Content.ReadFromJsonAsync<List<ProductDto>>();
                 }
-                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+
+                // Contact Form listesi
+                var contactFormResponse = await client.GetAsync("https://localhost:7284/api/ContactForm");
+                if (contactFormResponse.IsSuccessStatusCode)
                 {
-                    ErrorMessage = "No users found for the specified role.";
-                }
-                else
-                {
-                    ErrorMessage = "Error: Unable to retrieve data.";
+                    ContactForms = await contactFormResponse.Content.ReadFromJsonAsync<List<ContactFormDto>>();
                 }
             }
             catch (Exception ex)
@@ -77,7 +117,8 @@ namespace ProductAppUI.Pages.User
             }
         }
 
-        public async Task<IActionResult> OnPostCreateAsync()
+        // User ekleme, güncelleme ve silme iþlemleri
+        public async Task<IActionResult> OnPostCreateUserAsync()
         {
             if (!_cache.TryGetValue("token", out string token))
             {
@@ -93,15 +134,35 @@ namespace ProductAppUI.Pages.User
 
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToPage(); // Yeni kullanýcý eklendiðinde sayfayý yenileyerek güncellenmiþ listeyi göster
+                return RedirectToPage();
             }
 
             ErrorMessage = "Error: Unable to create user.";
             return Page();
         }
 
-        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        public async Task<IActionResult> OnPostDeleteUserAsync(int id)
         {
+            var response = await SendAuthorizedDeleteRequestAsync($"https://localhost:7284/api/User/{id}");
+            return HandleResponse(response);
+        }
+
+        public async Task<IActionResult> OnPostUpdateUserAsync()
+        {
+            var updateUserRequest = new { Username = UpdateUsername, Role = UpdateRole };
+            var response = await SendAuthorizedPutRequestAsync($"https://localhost:7284/api/User/{UpdateUserId}", updateUserRequest);
+            return HandleResponse(response);
+        }
+
+        // Product ekleme, güncelleme ve silme iþlemleri
+        public async Task<IActionResult> OnPostCreateProductAsync()
+        {
+            if (!ModelState.IsValid)
+            {
+                ErrorMessage = "Lütfen tüm alanlarý doðru doldurun.";
+                return Page();
+            }
+
             if (!_cache.TryGetValue("token", out string token))
             {
                 ErrorMessage = "Authorization token not found. Please log in.";
@@ -111,36 +172,82 @@ namespace ProductAppUI.Pages.User
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await client.DeleteAsync($"https://localhost:7284/api/User/{id}");
+            var createProductRequest = new CreateProductRequest(ProductCode, ProductName, ProductPrice, ProductImageUrl);
+            var response = await client.PostAsJsonAsync("https://localhost:7284/api/Products", createProductRequest);
+
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToPage();
+                return RedirectToPage(); // Sayfayý yenileyerek tabloyu günceller
             }
-            ErrorMessage = "Error: Unable to delete user.";
+
+            ErrorMessage = "Error: Unable to create product.";
             return Page();
         }
 
-        public async Task<IActionResult> OnPostUpdateAsync()
+
+
+        public async Task<IActionResult> OnPostDeleteProductAsync(int id)
         {
-            if (!_cache.TryGetValue("token", out string token))
-            {
-                ErrorMessage = "Authorization token not found. Please log in.";
-                return Page();
-            }
+            var response = await SendAuthorizedDeleteRequestAsync($"https://localhost:7284/api/Products/{id}");
+            return HandleResponse(response);
+        }
 
+        public async Task<IActionResult> OnPostUpdateProductAsync()
+        {
+            var updateProductRequest = new { ProductName = ProductName, Price = ProductPrice };
+            var response = await SendAuthorizedPutRequestAsync($"https://localhost:7284/api/Products/{ProductId}", updateProductRequest);
+            return HandleResponse(response);
+        }
+
+        // Contact Form ekleme, güncelleme ve silme iþlemleri
+        public async Task<IActionResult> OnPostCreateContactFormAsync()
+        {
+            var createContactFormRequest = new { Subject = ContactFormSubject, Message = ContactFormMessage };
+            var response = await SendAuthorizedPostRequestAsync("https://localhost:7284/api/ContactForm", createContactFormRequest);
+            return HandleResponse(response);
+        }
+
+        public async Task<IActionResult> OnPostDeleteContactFormAsync(int id)
+        {
+            var response = await SendAuthorizedDeleteRequestAsync($"https://localhost:7284/api/ContactForm/{id}");
+            return HandleResponse(response);
+        }
+
+        public async Task<IActionResult> OnPostUpdateContactFormAsync()
+        {
+            var updateContactFormRequest = new { Subject = ContactFormSubject, Message = ContactFormMessage };
+            var response = await SendAuthorizedPutRequestAsync($"https://localhost:7284/api/ContactForm/{ContactFormId}", updateContactFormRequest);
+            return HandleResponse(response);
+        }
+
+        // Yardýmcý Metodlar
+        private async Task<HttpResponseMessage> SendAuthorizedPostRequestAsync(string url, object data)
+        {
             var client = _httpClientFactory.CreateClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            return await client.PostAsJsonAsync(url, data);
+        }
 
-            var updateUserRequest = new { Username = UpdateUsername, Role = UpdateRole };
-            var content = new StringContent(JsonSerializer.Serialize(updateUserRequest), Encoding.UTF8, "application/json");
-            var response = await client.PutAsync($"https://localhost:7284/api/User/{UpdateUserId}", content);
+        private async Task<HttpResponseMessage> SendAuthorizedPutRequestAsync(string url, object data)
+        {
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+            return await client.PutAsync(url, content);
+        }
 
+        private async Task<HttpResponseMessage> SendAuthorizedDeleteRequestAsync(string url)
+        {
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            return await client.DeleteAsync(url);
+        }
+
+        private IActionResult HandleResponse(HttpResponseMessage response)
+        {
             if (response.IsSuccessStatusCode)
-            {
                 return RedirectToPage();
-            }
-
-            ErrorMessage = "Error: Unable to update user.";
+            ErrorMessage = "Error: Unable to process request.";
             return Page();
         }
     }

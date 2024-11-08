@@ -1,11 +1,10 @@
 ﻿@page
 @model UsersModel
 @{
-    ViewData["Title"] = "User List";
+    ViewData["Title"] = "User, Product, and Contact Form Management";
 }
 
-<h2>Kullanıcı Listesi</h2>
-
+<h2>Kullanıcı Yönetimi</h2>
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
     <p style="color:red">@Model.ErrorMessage</p>
@@ -18,8 +17,6 @@ else if (Model.Users.Count > 0)
                 <th>Id</th>
                 <th>Kullanıcı Adı</th>
                 <th>Rol</th>
-                <th>Güncelleme Tarihi</th>
-                <th>Silindi</th>
                 <th>İşlemler</th>
             </tr>
         </thead>
@@ -30,48 +27,96 @@ else if (Model.Users.Count > 0)
                     <td>@user.Id</td>
                     <td>@user.Username</td>
                     <td>@user.Role</td>
-                    <td>@user.UpdatedDate.ToShortDateString()</td>
-                    <td>@user.IsDeleted</td>
                     <td>
-                        <button class="btn btn-primary btn-sm" onclick="openUpdateModal('@user.Id', '@user.Username', '@user.Role')">Güncelle</button>
-                        <button class="btn btn-danger btn-sm" onclick="openDeleteModal('@user.Id')">Sil</button>
+                        <button class="btn btn-primary btn-sm" onclick="openUpdateUserModal('@user.Id', '@user.Username', '@user.Role')">Güncelle</button>
+                        <button class="btn btn-danger btn-sm" onclick="openDeleteUserModal('@user.Id')">Sil</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 }
-else
-{
-    <p>No users found.</p>
-}
+<button class="btn btn-success" onclick="openCreateUserModal()">Yeni Kullanıcı Ekle</button>
 
-<!-- Yeni Kullanıcı Ekleme Butonu -->
-<button class="btn btn-success" onclick="openCreateModal()">Yeni Kullanıcı Ekle</button>
+<h2>Ürün Yönetimi</h2>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Ürün Adı</th>
+            <th>Fiyat</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model.Products)
+        {
+            <tr>
+                <td>@product.Id</td>
+                <td>@product.ProductName</td>
+                <td>@product.Price</td>
+                <td>
+                    <button class="btn btn-primary btn-sm" onclick="openUpdateProductModal('@product.Id', '@product.ProductName', '@product.Price')">Güncelle</button>
+                    <button class="btn btn-danger btn-sm" onclick="openDeleteProductModal('@product.Id')">Sil</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<button class="btn btn-success" onclick="openCreateProductModal()">Yeni Ürün Ekle</button>
 
-<!-- Yeni Kullanıcı Ekleme Modali -->
-<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+<h2>İletişim Formu Yönetimi</h2>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Konu</th>
+            <th>Mesaj</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var contactForm in Model.ContactForms)
+        {
+            <tr>
+                <td>@contactForm.Id</td>
+                <td>@contactForm.Subject</td>
+                <td>@contactForm.Message</td>
+                <td>
+                    <button class="btn btn-primary btn-sm" onclick="openUpdateContactFormModal('@contactForm.Id', '@contactForm.Subject', '@contactForm.Message')">Güncelle</button>
+                    <button class="btn btn-danger btn-sm" onclick="openDeleteContactFormModal('@contactForm.Id')">Sil</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<button class="btn btn-success" onclick="openCreateContactFormModal()">Yeni İletişim Formu Ekle</button>
+
+<!-- Modals -->
+
+<!-- User Modals -->
+<div class="modal fade" id="createUserModal" tabindex="-1" role="dialog" aria-labelledby="createUserModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="createModalLabel">Yeni Kullanıcı Ekle</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
+                <h5 class="modal-title">Yeni Kullanıcı Ekle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post" asp-page-handler="Create">
+                <form method="post" asp-page-handler="CreateUser">
                     <div class="form-group">
-                        <label for="newUsername">Kullanıcı Adı:</label>
-                        <input type="text" id="newUsername" name="NewUsername" class="form-control" required />
+                        <label>Kullanıcı Adı:</label>
+                        <input type="text" name="NewUsername" class="form-control" required />
                     </div>
                     <div class="form-group">
-                        <label for="newPassword">Parola:</label>
-                        <input type="password" id="newPassword" name="NewPassword" class="form-control" required />
+                        <label>Parola:</label>
+                        <input type="password" name="NewPassword" class="form-control" required />
                     </div>
                     <div class="form-group">
-                        <label for="newRole">Rol:</label>
-                        <input type="text" id="newRole" name="NewRole" class="form-control" required />
+                        <label>Rol:</label>
+                        <input type="text" name="NewRole" class="form-control" required />
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
@@ -83,50 +128,170 @@ else
     </div>
 </div>
 
-<!-- Silme Onay Modali -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="updateUserModal" tabindex="-1" role="dialog" aria-labelledby="updateUserModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Kullanıcıyı Sil</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
+                <h5 class="modal-title">Kullanıcıyı Güncelle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                Bu kullanıcıyı silmek istediğinizden emin misiniz?
-            </div>
-            <div class="modal-footer">
-                <form method="post" asp-page-handler="Delete">
-                    <input type="hidden" name="id" id="deleteUserId" />
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hayır</button>
-                    <button type="submit" class="btn btn-danger">Evet</button>
+                <form method="post" asp-page-handler="UpdateUser">
+                    <input type="hidden" name="UpdateUserId" id="updateUserId" />
+                    <div class="form-group">
+                        <label>Kullanıcı Adı:</label>
+                        <input type="text" name="UpdateUsername" id="updateUsername" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Rol:</label>
+                        <input type="text" name="UpdateRole" id="updateRole" class="form-control" required />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">Güncelle</button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Güncelleme Modali -->
-<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+<!-- Product Modals -->
+<!-- Product Create Modal -->
+<div class="modal fade" id="createProductModal" tabindex="-1" role="dialog" aria-labelledby="createProductModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="updateModalLabel">Kullanıcıyı Güncelle</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
+                <h5 class="modal-title">Yeni Ürün Ekle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post" asp-page-handler="Update">
-                    <input type="hidden" name="UpdateUserId" id="updateUserId" />
+                <form method="post" asp-page-handler="CreateProduct">
                     <div class="form-group">
-                        <label for="updateUsername">Kullanıcı Adı</label>
-                        <input type="text" class="form-control" id="updateUsername" name="UpdateUsername" required />
+                        <label>Ürün Kodu:</label>
+                        <input type="text" name="ProductCode" class="form-control" required />
                     </div>
                     <div class="form-group">
-                        <label for="updateRole">Rol</label>
-                        <input type="text" class="form-control" id="updateRole" name="UpdateRole" required />
+                        <label>Ürün Adı:</label>
+                        <input type="text" name="ProductName" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Fiyat:</label>
+                        <input type="number" step="0.01" name="ProductPrice" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Resim URL:</label>
+                        <input type="text" name="ProductImageUrl" class="form-control" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-success">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateProductModal" tabindex="-1" role="dialog" aria-labelledby="updateProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ürünü Güncelle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-page-handler="UpdateProduct">
+                    <input type="hidden" name="UpdateProductId" id="updateProductId" />
+                    <div class="form-group">
+                        <label>Ürün Kodu:</label>
+                        <input type="text" name="ProductCode" id="updateProductCode" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Ürün Adı:</label>
+                        <input type="text" name="ProductName" id="updateProductName" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Fiyat:</label>
+                        <input type="number" step="0.01" name="ProductPrice" id="updateProductPrice" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Resim URL:</label>
+                        <input type="text" name="ProductImageUrl" id="updateProductImageUrl" class="form-control" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">Güncelle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Form Modals -->
+<div class="modal fade" id="createContactFormModal" tabindex="-1" role="dialog" aria-labelledby="createContactFormModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni İletişim Formu Ekle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-page-handler="CreateContactForm">
+                    <div class="form-group">
+                        <label>Konu:</label>
+                        <input type="text" name="ContactFormSubject" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Mesaj:</label>
+                        <textarea name="ContactFormMessage" class="form-control" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Durum:</label>
+                        <input type="text" name="ContactFormStatus" class="form-control" required />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-success">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateContactFormModal" tabindex="-1" role="dialog" aria-labelledby="updateContactFormModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">İletişim Formunu Güncelle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-page-handler="UpdateContactForm">
+                    <input type="hidden" name="UpdateContactFormId" id="updateContactFormId" />
+                    <div class="form-group">
+                        <label>Konu:</label>
+                        <input type="text" name="ContactFormSubject" id="updateContactFormSubject" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Mesaj:</label>
+                        <textarea name="ContactFormMessage" id="updateContactFormMessage" class="form-control" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Durum:</label>
+                        <input type="text" name="ContactFormStatus" id="updateContactFormStatus" class="form-control" required />
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
@@ -140,20 +305,33 @@ else
 
 @section Scripts {
     <script>
-        function openCreateModal() {
-            $('#createModal').modal('show');
-        }
-
-        function openDeleteModal(id) {
-            document.getElementById('deleteUserId').value = id;
-            $('#deleteModal').modal('show');
-        }
-
-        function openUpdateModal(id, username, role) {
+        function openCreateUserModal() { $('#createUserModal').modal('show'); }
+        function openUpdateUserModal(id, username, role) {
             document.getElementById('updateUserId').value = id;
             document.getElementById('updateUsername').value = username;
             document.getElementById('updateRole').value = role;
-            $('#updateModal').modal('show');
+            $('#updateUserModal').modal('show');
+        }
+        function openDeleteUserModal(id) {
+            // Implement deletion logic if necessary
+            $('#deleteUserModal').modal('show');
+        }
+        function openCreateProductModal() { $('#createProductModal').modal('show'); }
+        function openUpdateProductModal(id, code, name, price, imageUrl) {
+            document.getElementById('updateProductId').value = id;
+            document.getElementById('updateProductCode').value = code;
+            document.getElementById('updateProductName').value = name;
+            document.getElementById('updateProductPrice').value = price;
+            document.getElementById('updateProductImageUrl').value = imageUrl;
+            $('#updateProductModal').modal('show');
+        }
+        function openCreateContactFormModal() { $('#createContactFormModal').modal('show'); }
+        function openUpdateContactFormModal(id, subject, message, status) {
+            document.getElementById('updateContactFormId').value = id;
+            document.getElementById('updateContactFormSubject').value = subject;
+            document.getElementById('updateContactFormMessage').value = message;
+            document.getElementById('updateContactFormStatus').value = status;
+            $('#updateContactFormModal').modal('show');
         }
     </script>
 }
