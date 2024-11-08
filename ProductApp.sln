@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductApp.DataAccess", "Pr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductApp.Services", "ProductApp.Services\ProductApp.Services.csproj", "{679F666D-0F31-4219-873F-064B69D4248F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductAppUI", "ProductAppUI\ProductAppUI.csproj", "{85F9AC60-CEF9-4EE7-9795-18337B44AB9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductAppUI", "ProductAppUI\ProductAppUI.csproj", "{85F9AC60-CEF9-4EE7-9795-18337B44AB9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

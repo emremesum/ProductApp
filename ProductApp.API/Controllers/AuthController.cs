@@ -36,10 +36,16 @@ namespace ProductApp.API.Controllers
 			    user.TokenCreatedDate = DateTime.Now;
 			    user.UpdatedDate = DateTime.Now;
 
-			_context.Users.Update(user);
-			await _context.SaveChangesAsync();
+            var loginDto = new LoginResponse
+            {
+                Id = user.Id,
+                Token = user.Token
+            };
 
-			return Ok(new { token });
+            _context.Users.Update(user);
+			await _context.SaveChangesAsync();
+			
+			return Ok(loginDto);
 		}
 	}
 

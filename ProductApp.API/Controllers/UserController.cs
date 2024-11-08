@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProductApp.Services.Products;
 using ProductApp.Services.Users;
 
 namespace ProductApp.API.Controllers;
@@ -8,25 +7,25 @@ namespace ProductApp.API.Controllers;
 [ApiController]
 public class UserController(IUserService userService) : ControllerBase
 {
-	[HttpGet("{role}")]
+	[HttpGet("{role?}")]
 	[Authorize(Roles = "Admin")]
 
 	public async Task<IActionResult> GetAll(string role)
 	{
-		var productResult = await userService.GetAllAsync(role);
-		if (productResult.Data.Count==0)
+		var userResult = await userService.GetAllAsync(role);
+		if (userResult.Data.Count==0)
 		{
 			return NotFound();
 		}
 		
-		if (productResult.IsSuccess)
+		if (userResult.IsSuccess)
 		{
-			return Ok(productResult.Data);
+			return Ok(userResult.Data);
 
 		}
 		else
 		{
-			return BadRequest(productResult.ErrorMessage);
+			return BadRequest(userResult.ErrorMessage);
 		}
 	}
 

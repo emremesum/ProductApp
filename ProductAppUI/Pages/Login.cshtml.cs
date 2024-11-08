@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
+using ProductApp.Services.Auth;
 using System.Text;
 using System.Text.Json;
 
@@ -38,12 +39,12 @@ public class LoginModel : PageModel
         {
             var content = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<LoginResponse>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
+                                                    
             // Cache'e userId ve token kaydet
-            _cache.Set("userId", result.UserId);
+            _cache.Set("userId", result.Id);
             _cache.Set("token", result.Token);
 
-            return RedirectToPage("Home"); // Login baþarýlýysa ana sayfaya yönlendirme
+            return RedirectToPage("Main"); // Login baþarýlýysa ana sayfaya yönlendirme
         }
         else
         {
@@ -53,8 +54,3 @@ public class LoginModel : PageModel
     }
 }
 
-public class LoginResponse
-{
-    public string UserId { get; set; }
-    public string Token { get; set; }
-}
