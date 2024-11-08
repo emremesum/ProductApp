@@ -1,13 +1,14 @@
 ﻿@page "{role?}"
-@using ProductAppUI.MainModel
+@using ProductAppUI.Pages.User
 @model UsersModel
 @{
     ViewData["Title"] = "User List";
 }
+<div class="card-body">Your token: @Model.Token</div>
 
 <h2>Kullanıcı listesi </h2>
 
-@* <p>Your token: @Model.Token</p> *@
+
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
@@ -22,7 +23,7 @@ else if (Model.Users.Count > 0)
                 <th scope="col">Kullanıcı Adı</th>
                 <th scope="col">Rol</th>
                 <th scope="col">Güncelleme Tarihi</th>
-                <th scope="col">Silindi mi?</th>
+                <th scope="col">Silindi</th>
                 <th scope="col">İşlemler</th>
             </tr>
         </thead>
@@ -48,3 +49,5 @@ else
 {
     <p>No users found.</p>
 }
+
+

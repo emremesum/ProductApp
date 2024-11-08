@@ -44,7 +44,7 @@ public class LoginModel : PageModel
             _cache.Set("userId", result.Id);
             _cache.Set("token", result.Token);
 
-            return RedirectToPage("Main"); // Login baþarýlýysa ana sayfaya yönlendirme
+            return RedirectToPage("user/Users"); // Login baþarýlýysa ana sayfaya yönlendirme
         }
         else
         {

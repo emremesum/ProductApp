@@ -1,26 +1,22 @@
-using ProductApp.DataAccess.Users;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Net.Http.Headers;
 using Microsoft.Extensions.Caching.Memory;
+using ProductApp.Services.Products;
+using System.Net.Http.Headers;
+namespace ProductAppUI.Pages.Product;
 
-namespace ProductAppUI.MainModel;
-
-public class UsersModel : PageModel
+public class ProductsModel : PageModel
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IMemoryCache _cache;
+    public string ErrorMessage { get; set; }
 
-    public UsersModel(IHttpClientFactory httpClientFactory, IMemoryCache cache)
+    public ProductsModel(IHttpClientFactory httpClientFactory, IMemoryCache cache)
     {
         _httpClientFactory = httpClientFactory;
         _cache = cache;
     }
-    
 
-    public List<UserApp> Users { get; set; } = new List<UserApp>();
-
-    public string ErrorMessage { get; set; }
-    public string Token { get; set; }
+    public List<ProductDto> Products { get; set; }
 
     public async Task OnGetAsync()
     {
@@ -30,27 +26,25 @@ public class UsersModel : PageModel
             return;
         }
         var role = "Admin";
-        Token = token;
 
         var client = _httpClientFactory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
         try
         {
             // Make a GET request to the GetAll endpoint with the role parameter
-            var response = await client.GetAsync($"https://localhost:7284/api/User/{role}");
+            var response = await client.GetAsync("https://localhost:7284/api/Products");
 
             if (response.IsSuccessStatusCode)
             {
-                Users = await response.Content.ReadFromJsonAsync<List<UserApp>>();
+                Products = await response.Content.ReadFromJsonAsync<List<ProductDto>>();
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                ErrorMessage = "No users found for the specified role.";
+                ErrorMessage = "Stokta ürün yok ";
             }
             else
             {
-                ErrorMessage = "Error: Unable to retrieve data.";
+                ErrorMessage = "Data alýnamadý.";
             }
         }
         catch (Exception ex)
@@ -59,4 +53,3 @@ public class UsersModel : PageModel
         }
     }
 }
-
