@@ -26,7 +26,13 @@ namespace ProductApp.UI.Controllers
 			return View();
 		}
 
-		[HttpPost]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
 		public async Task<IActionResult> Create(CreateProductRequest createProduct)
 		{
 			 await _client.PostAsJsonAsync("products/create", createProduct);

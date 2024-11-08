@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductApp.DataAccess", "Pr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductApp.Services", "ProductApp.Services\ProductApp.Services.csproj", "{679F666D-0F31-4219-873F-064B69D4248F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductApp.UI", "ProductApp.UI\ProductApp.UI.csproj", "{88FEA13F-E6AC-47B9-BF7E-8A2B6EB6EE3E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductAppUIRazor", "ProductAppUI\ProductAppUIRazor.csproj", "{EEFB9754-C5FA-4A1A-ACEE-2F98D2153DD1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{679F666D-0F31-4219-873F-064B69D4248F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{679F666D-0F31-4219-873F-064B69D4248F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{679F666D-0F31-4219-873F-064B69D4248F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{88FEA13F-E6AC-47B9-BF7E-8A2B6EB6EE3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88FEA13F-E6AC-47B9-BF7E-8A2B6EB6EE3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88FEA13F-E6AC-47B9-BF7E-8A2B6EB6EE3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88FEA13F-E6AC-47B9-BF7E-8A2B6EB6EE3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEFB9754-C5FA-4A1A-ACEE-2F98D2153DD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEFB9754-C5FA-4A1A-ACEE-2F98D2153DD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEFB9754-C5FA-4A1A-ACEE-2F98D2153DD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEFB9754-C5FA-4A1A-ACEE-2F98D2153DD1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
