@@ -8,6 +8,8 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using System.Net;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace ProductAppUI.Pages.User
 {
@@ -143,8 +145,23 @@ namespace ProductAppUI.Pages.User
 
         public async Task<IActionResult> OnPostDeleteUserAsync(int id)
         {
+
+            
             var response = await SendAuthorizedDeleteRequestAsync($"https://localhost:7284/api/User/{id}");
-            return HandleResponse(response);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Optionally, reload users or handle success (e.g., showing success message)
+                return RedirectToPage(); // Redirect to refresh the page
+            }
+            else
+            {
+                // Handle error (optional)
+                ModelState.AddModelError(string.Empty, "Kullanýcý silinemedi. Lütfen tekrar deneyin.");
+                return Page();
+            }
+
+
         }
 
         public async Task<IActionResult> OnPostUpdateUserAsync()
@@ -185,7 +202,6 @@ namespace ProductAppUI.Pages.User
         }
 
 
-
         public async Task<IActionResult> OnPostDeleteProductAsync(int id)
         {
             var response = await SendAuthorizedDeleteRequestAsync($"https://localhost:7284/api/Products/{id}");
@@ -194,6 +210,14 @@ namespace ProductAppUI.Pages.User
 
         public async Task<IActionResult> OnPostUpdateProductAsync()
         {
+            if (!_cache.TryGetValue("token", out string token))
+            {
+                ErrorMessage = "Authorization token not found. Please log in.";
+                return Page();
+            }
+
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var updateProductRequest = new { ProductName = ProductName, Price = ProductPrice };
             var response = await SendAuthorizedPutRequestAsync($"https://localhost:7284/api/Products/{ProductId}", updateProductRequest);
             return HandleResponse(response);
@@ -202,6 +226,16 @@ namespace ProductAppUI.Pages.User
         // Contact Form ekleme, güncelleme ve silme iþlemleri
         public async Task<IActionResult> OnPostCreateContactFormAsync()
         {
+            if (!_cache.TryGetValue("token", out string token))
+            {
+                ErrorMessage = "Authorization token not found. Please log in.";
+                return Page();
+            }
+
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+
             var createContactFormRequest = new { Subject = ContactFormSubject, Message = ContactFormMessage };
             var response = await SendAuthorizedPostRequestAsync("https://localhost:7284/api/ContactForm", createContactFormRequest);
             return HandleResponse(response);
@@ -215,6 +249,14 @@ namespace ProductAppUI.Pages.User
 
         public async Task<IActionResult> OnPostUpdateContactFormAsync()
         {
+            if (!_cache.TryGetValue("token", out string token))
+            {
+                ErrorMessage = "Authorization token not found. Please log in.";
+                return Page();
+            }
+
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var updateContactFormRequest = new { Subject = ContactFormSubject, Message = ContactFormMessage };
             var response = await SendAuthorizedPutRequestAsync($"https://localhost:7284/api/ContactForm/{ContactFormId}", updateContactFormRequest);
             return HandleResponse(response);
@@ -223,23 +265,51 @@ namespace ProductAppUI.Pages.User
         // Yardýmcý Metodlar
         private async Task<HttpResponseMessage> SendAuthorizedPostRequestAsync(string url, object data)
         {
+            if (!_cache.TryGetValue("token", out string token))
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    ReasonPhrase = "Yetkisiz Eriþim"
+                };
+                return response;
+
+            }
             var client = _httpClientFactory.CreateClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return await client.PostAsJsonAsync(url, data);
         }
 
         private async Task<HttpResponseMessage> SendAuthorizedPutRequestAsync(string url, object data)
         {
+            if (!_cache.TryGetValue("token", out string token))
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    ReasonPhrase = "Yetkisiz Eriþim"
+                };
+                return response;
+
+            }
             var client = _httpClientFactory.CreateClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
             return await client.PutAsync(url, content);
         }
 
         private async Task<HttpResponseMessage> SendAuthorizedDeleteRequestAsync(string url)
         {
+
+            if (!_cache.TryGetValue("token", out string token))
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    ReasonPhrase = "Yetkisiz Eriþim"
+                };
+                return response;
+
+            }
             var client = _httpClientFactory.CreateClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return await client.DeleteAsync(url);
         }
 

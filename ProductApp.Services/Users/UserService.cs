@@ -27,7 +27,7 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
 		var user = await userRepository.GetByIdAsync(id);
 		if (user == null)
 		{
-			return ServiceResult.Fail("User not found");
+			return ServiceResult.Fail("Kullanıcı Bulunamadı");
 		}
 
 		user.Username = request.Username ?? user.Username;
@@ -46,7 +46,7 @@ public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
 		var user = await userRepository.GetByIdAsync(id);
 		if (user == null)
 		{
-			return ServiceResult.Fail("User not found");
+			return ServiceResult.Fail("Kullanıcı Bulunamadı");
 		}
 
 		user.IsDeleted = true;

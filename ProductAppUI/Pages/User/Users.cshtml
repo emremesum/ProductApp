@@ -28,8 +28,14 @@ else if (Model.Users.Count > 0)
                     <td>@user.Username</td>
                     <td>@user.Role</td>
                     <td>
+                        <!-- Update Button -->
                         <button class="btn btn-primary btn-sm" onclick="openUpdateUserModal('@user.Id', '@user.Username', '@user.Role')">Güncelle</button>
-                        <button class="btn btn-danger btn-sm" onclick="openDeleteUserModal('@user.Id')">Sil</button>
+
+                        <!-- Delete Button Form -->
+                        <form method="post" asp-page-handler="DeleteUser" style="display:inline;">
+                            <input type="hidden" name="id" value="@user.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Sil</button>
+                        </form>
                     </td>
                 </tr>
             }
@@ -84,7 +90,7 @@ else if (Model.Users.Count > 0)
                 <td>@contactForm.Message</td>
                 <td>
                     <button class="btn btn-primary btn-sm" onclick="openUpdateContactFormModal('@contactForm.Id', '@contactForm.Subject', '@contactForm.Message')">Güncelle</button>
-                    <button class="btn btn-danger btn-sm" onclick="openDeleteContactFormModal('@contactForm.Id')">Sil</button>
+                    <button class="btn btn-danger btn-sm" onclick="openDeleteContactFormModal('@contactForm.Id')">Sil</button> 
                 </td>
             </tr>
         }

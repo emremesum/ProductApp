@@ -10,4 +10,8 @@
     <ProjectReference Include="..\ProductApp.Services\ProductApp.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\Modals\" />
+  </ItemGroup>
+
 </Project>
