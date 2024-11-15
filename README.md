@@ -58,7 +58,7 @@ HTML tabanlı bir kullanıcı arayüzü aracılığıyla:
 - **Entity Framework Core**  
 - **SQL Server**  
 - **JWT Authentication**  
-- **HTML**  
+- **Razor Page**  
 
 ## Opsiyonel: Ekstralar  
 - **Repository Pattern** ve **Unit of Work Pattern** kullanılmıştır.  
